@@ -12,22 +12,91 @@
 #include "btree.h"
 #include "testable.h"
 
-//static void test_btree_one_leaf(void);
+void bbt_leaf1(void);
+void bbt_leaf3(void);
+void bbt_neg_bst(void);
 
 int main (void)
 {
 	white_box_tests ();
 
 	// add more tests of your own!
-    // test_btree_one_leaf();
+    bbt_leaf1();
+    bbt_leaf3();
+    
+    bbt_neg_bst();
     
 	puts ("\nAll tests passed. You are awesome!");
 	return EXIT_SUCCESS;
 }
 
-/*static void test_btree_one_leaf(void)
-{
+void bbt_leaf1(void){
     Item it = int_item_new(5);
-    btree_node tree = btree_node_new(it);
-    assert(btree_size_leaf(tree) == 1);
-}*/
+    BTreeNode Tree = NULL;
+    Tree = btree_insert(Tree, it);
+    
+    assert(Tree != NULL);
+    assert(btree_search(Tree, it) != NULL);
+    
+    assert(btree_size(Tree) == 1);
+    assert(btree_size_leaf(Tree) == 1);
+    
+    assert(btree_count_if(Tree, even_p) == 0);
+    assert(btree_count_if(Tree, odd_p) == 1);
+    assert(btree_count_if(Tree, negative_p) == 0);
+    
+    puts("bbt-leaf1 - passed!");
+    
+    btree_drop(Tree);
+}
+
+void bbt_leaf3(void){
+    Item it = int_item_new(5);
+    BTreeNode Tree = NULL;
+    Tree = btree_insert(Tree, it);
+
+    
+    it = int_item_new(10);
+    Tree = btree_insert(Tree, it);
+    
+    it = int_item_new(1);
+    Tree = btree_insert(Tree, it);  
+    
+    assert(btree_size(Tree) == 3);
+    assert(btree_size_leaf(Tree) == 2);
+    
+    assert(btree_count_if(Tree, even_p) == 1);
+    assert(btree_count_if(Tree, odd_p) == 2);
+    assert(btree_count_if(Tree, negative_p) == 0);
+    
+    puts("bbt-leaf2 - passed!");
+    
+    btree_drop(Tree);
+}
+
+void bbt_neg_bst(void){
+    Item it = int_item_new(-5);
+    BTreeNode Tree = NULL;
+    Tree = btree_insert(Tree, it);
+
+    
+    it = int_item_new(-10);
+    Tree = btree_insert(Tree, it);
+    
+    it = int_item_new(1);
+    Tree = btree_insert(Tree, it);  
+    
+    assert(btree_size(Tree) == 3);
+    assert(btree_size_leaf(Tree) == 2);
+    
+    assert(btree_count_if(Tree, even_p) == 1);
+    assert(btree_count_if(Tree, odd_p) == 2);
+    assert(btree_count_if(Tree, negative_p) == 2);
+    
+    puts("bbt-neg-bst - passed!");
+    
+    btree_drop(Tree);
+
+}
+
+

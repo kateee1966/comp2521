@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sysexits.h>
-
 #include "btree.h"
 #include "queue.h"
 #include "item.h"
@@ -213,47 +212,101 @@ size_t btree_count_if (btree_node *tree, btree_pred_fp pred)
 	// warnx ("btree_count_if unimplemented");
 	// implement me!
 	// return 0;
-	
+	/*
     size_t num = 0;
-    if (pred == 'true') num ++;
-    if (pred == 'false') num = btree_count_if (tree->left, pred) + btree_count_if (tree->right, pred);    
+    if (pred(tree->item) == true) num ++;
+    if (pred(tree->item) == false) num = btree_count_if (tree->left, pred) + btree_count_if (tree->right, pred);    
     return num;	
+    */
+    /*
+    if(tree == NULL){
+		return 0;
+	}
+	size_t val = 0;
+	if(pred(tree->item) == 1){
+		val = 1;
+	}
+  	return val + btree_count_if(tree->left,pred) + btree_count_if(tree->right,pred);
+  	*/
+  	size_t count = 0;
+	btree_node **list;
+	list = btree_traverse (tree, BTREE_TRAVERSE_LEVEL, NULL);
+	
+	for (size_t i = 0; i < btree_size(tree); i++) {
+	    if (pred(list[i]->item) == true) count++;
+	}
+	
+	free(list);
+	
+    return count;
 }
 
 /** Is an item even? */
 bool even_p (Item it)
 {
+    /*
     int a = int_item(it);
     if (a%2 == 0){
         return true;
     }
-    if (a%2 == 1){
+    else {
         return false;
     }
+    */
+    if(it == NULL){
+    	return false;
+    }
+    int a = int_item(it);
+    if (a%2 == 0){
+        return true;
+    }
+
+    return false;
 }
 
 /** Is an item odd? */
 bool odd_p (Item it)
 {
+    /*
     int a = int_item(it);
-    if (a%2 == 1){
+    if (a%2 != 0){
         return true;
     }
-    if (a%2 == 0){ 
+    else{ 
         return false;
     }
+    */
+    if(it == NULL){
+    	return false;
+    }
+    int a = int_item(it);
+    if (a%2 != 0){
+        return true;
+    }
+
+    return false;
 }
 
 /** Is an item negative? */
 bool negative_p (Item it)
 {
+    /*
     int a = int_item(it);
     if (a < 0){ 
         return true;
     }
-    if (a >= 0){
+    else{
         return false;
+    }*/
+    if(it == NULL){
+    	return false;
     }
+    int a = int_item(it);
+    if (a < 0){
+        return true;
+    }
+
+    return false;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -339,6 +392,8 @@ static void btree_traverse_level (
 	    end
     end
     */
+    /*
+    if (tree==NULL) return;
     if (tree!=NULL) {
         Queue q = queue_new();
         queue_en (q, tree->item);
@@ -355,7 +410,26 @@ static void btree_traverse_level (
             }
         }
         
-    }  
+    }*/
+    
+    BTreeNode curr;
+    Item it;
+	Queue q = queue_new();
+	
+	queue_en(q, btree_node_value(tree));
+	
+	while (queue_size(q) > 0) {
+	    it = queue_de(q);
+	    curr = btree_search(tree, it);
+	    
+	    btree_traverse_visit(curr, state);
+	    
+	    if (curr->left != NULL) queue_en(q, btree_node_value(curr->left));
+	    if (curr->right != NULL) queue_en(q, btree_node_value(curr->right));
+	    
+	}
+
+    queue_drop(q);
     
 }
 
@@ -388,10 +462,10 @@ void white_box_tests (void)
 {
 	// warnx ("white_box_tests unimplemented");
 	// implement me!
-	wbt_btree_size_leaf;
-    wbt_btree_drop;
+	wbt_btree_size_leaf();
+    wbt_btree_drop();
 	//wbt_btree_traverse_level;
-	wbt_btree_count_if;
+	wbt_btree_count_if();
 	
 }
 
